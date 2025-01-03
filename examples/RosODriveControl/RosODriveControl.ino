@@ -1,15 +1,15 @@
 
-#include <commands.h> 
-#include <ODriveUART.h>
+#include "commands.h"
+#include "ODriveUART.h"
 #include <SoftwareSerial.h>
-#include <experimental/filesystem>
+//#include <experimental/filesystem>
 
 // Arduino without spare serial ports (such as Arduino UNO) have to use software serial.
 // Note that this is implemented poorly and can lead to wrong data sent or read.
 // pin 8: RX - connect to ODrive TX
 // pin 9: TX - connect to ODrive RX
 SoftwareSerial odrive_serial(8, 9);
-unsigned long baudrate = 19200;  // Must match what you configure on the ODrive (see docs for details)
+unsigned long arduino_odrive_baudrate = 19200;  // Must match what you configure on the ODrive (see docs for details)
 
 // Teensy 3 and 4 (all versions) - Serial1
 // pin 0: RX - connect to ODrive TX
@@ -19,6 +19,8 @@ unsigned long baudrate = 19200;  // Must match what you configure on the ODrive 
 // int baudrate = 115200; // Must match what you configure on the ODrive (see docs for details)
 
 /* --------- VARIABLE INITIALISATION --------- */ 
+const long COMP_ARDUINO_BAUDRATE = 115200; 
+
 // pair of variables to help parse serial commands 
 int arg = 0;
 int index = 0;
@@ -127,7 +129,7 @@ int runCommand()
   switch ( cmd ) 
   {
     case GET_BAUDRATE:
-      Serial.println(BAUDRATE);
+      Serial.println(COMP_ARDUINO_BAUDRATE);
       break;
 
     case ANALOG_READ:
@@ -138,13 +140,14 @@ int runCommand()
       Serial.println(digitalRead(arg1));
       break;
 
-    case READ_MOTOR_STATES; 
+    case READ_MOTOR_STATES:
+    
       // get motor feedback 
       ODriveFeedback feedback = odrive.getFeedback();
       
-      Serial.print(odrive.pos); // print position  
+      Serial.print(feedback.pos); // print position  
       Serial.print(" "); 
-      Serial.println(odrive.vel); // print veocity 
+      Serial.println(feedback.vel); // print veocity 
 
       break; 
 
@@ -157,7 +160,7 @@ int runCommand()
 
 void setup()
 {   
-  odrive_serial.begin(baudrate);
+  odrive_serial.begin(arduino_odrive_baudrate);
 
   Serial.begin(115200); // Serial to PC
 
