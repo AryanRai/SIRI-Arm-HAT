@@ -1,7 +1,7 @@
 
 #include "commands.h"
 #include "ODriveUART.h"
-#include <SoftwareSerial.h>
+#include <SoftwareSerial.h> 
 //#include <experimental/filesystem>
 
 // Arduino without spare serial ports (such as Arduino UNO) have to use software serial.
@@ -19,7 +19,7 @@ unsigned long arduino_odrive_baudrate = 19200;  // Must match what you configure
 // int baudrate = 115200; // Must match what you configure on the ODrive (see docs for details)
 
 /* --------- VARIABLE INITIALISATION --------- */ 
-const long COMP_ARDUINO_BAUDRATE = 115200; 
+const long COMP_ARDUINO_BAUDRATE = 115200; // baud rate between arduino and computer 
 
 // pair of variables to help parse serial commands 
 int arg = 0;
@@ -73,10 +73,11 @@ void handleSpace()
 }
 
 void terminateCommand()
-{
+{ 
+//  Serial.println("Full command read, running."); 
   if (arg == 1)
   {
-    argv1[index] = NULL;
+    argv1[index] = NULL; 
   }
   else if (arg == 2)
   {
@@ -91,7 +92,7 @@ void processCharacter(char chr)
 {
   if (chr == '\r') // End of command
   {
-    terminateCommand();
+    terminateCommand(); 
   }
   else if (chr == ' ') // Argument delimiter
   {
@@ -120,11 +121,11 @@ void resetCommand()
 int runCommand() 
 {
   int i = 0; 
-  char *p = argv1;
-  char *str;
-  int pid_args[4];
-  arg1 = atoi(argv1);
-  arg2 = atoi(argv2);
+  // char* p = argv1;
+  // char* str;
+  // int pid_args[4];
+  arg1 = atof(argv1);
+  arg2 = atof(argv2);
 
   switch ( cmd ) 
   {
@@ -141,19 +142,22 @@ int runCommand()
       break;
 
     case READ_MOTOR_STATES:
-    
       // get motor feedback 
-      ODriveFeedback feedback = odrive.getFeedback();
+//      ODriveFeedback feedback = odrive.getFeedback();
       
-      Serial.print(feedback.pos); // print position  
-      Serial.print(" "); 
-      Serial.println(feedback.vel); // print veocity 
+//      Serial.print(feedback.pos); // print position  
+//      Serial.print(" "); 
+//      Serial.println(feedback.vel); // print veocity 
 
+        Serial.print("0.0"); 
+        Serial.print(" "); 
+        Serial.println("0.0"); 
       break; 
 
     case MOTOR_SPEEDS: 
       // TODO 
-      odrive.setVelocity( arg1 ); // only one motor for now 
+      odrive.setVelocity( arg1 ); // only one motor for now     
+      Serial.println("DONE");     
       break; 
   }
 }
@@ -162,15 +166,16 @@ void setup()
 {   
   odrive_serial.begin(arduino_odrive_baudrate);
 
-  Serial.begin(115200); // Serial to PC
+  Serial.begin(COMP_ARDUINO_BAUDRATE); // Serial to PC
 
   delay(10);
 
   Serial.println("Waiting for ODrive...");
-  while (odrive.getState() == AXIS_STATE_UNDEFINED)
-  {
-    delay(100);
-  }
+//  TODO: UNCOMMENTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
+//  while (odrive.getState() == AXIS_STATE_UNDEFINED)
+//  {
+//    delay(100);
+//  }
 
   Serial.println("found ODrive");
 
@@ -178,18 +183,19 @@ void setup()
   Serial.println(odrive.getParameterAsFloat("vbus_voltage"));
 
   Serial.println("Enabling closed loop control...");
-  while (odrive.getState() != AXIS_STATE_CLOSED_LOOP_CONTROL)
-  {
-    odrive.clearErrors();
-    odrive.setState(AXIS_STATE_CLOSED_LOOP_CONTROL);
-    delay(10);
-  }
+//  TODO: UNCOMMENTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
+//  while (odrive.getState() != AXIS_STATE_CLOSED_LOOP_CONTROL)
+//  {
+//    odrive.clearErrors();
+//    odrive.setState(AXIS_STATE_CLOSED_LOOP_CONTROL);
+//    delay(10);
+//  }
 
   Serial.println("ODrive running!");
 }
 
 /* Enter the main loop */
-void loop()
+void loop() 
 {
   // Continuously check and process incoming characters from the serial port
   while (Serial.available() > 0)
@@ -197,51 +203,4 @@ void loop()
     chr = Serial.read();
     processCharacter(chr);
   }
-
-  // // continuously check and process incoming characters from serial port 
-  // // Serial.available returns the number of characters left 
-  // while ( Serial.available() > 0 ) 
-  // {
-  //   // read the next 
-  //   chr = Serial.read(); 
-
-  //   // terminate a command with a carriage return 
-  //   if ( chr == '\r' ) 
-  //   {
-  //     if (arg == 1) 
-  //     {
-  //       argv1[index] = NULL; 
-  //     }
-  //     else if (arg == 2) 
-  //     {
-  //       argv2[index] = NULL;
-  //     }
-
-  //     runCommand(); 
-  //     resetCommand(); 
-
-  //     continue; 
-  //   }
-  //   else if ( chr == ' ' )
-  //   {
-  //     // step through the arguments 
-  //     if (arg == 0) 
-  //     {
-  //       arg = 1 // First space: Switch to first argument.
-  //     } 
-  //     else if (arg == 1) 
-  //     { 
-  //       argv1[index] = NULL; // Null-terminate the first argument.
-  //       arg = 2;             // Switch to second argument.
-  //       index = 0;           // Reset index for the second argument.
-  //     }
-  //     continue; // Move to the next character.
-  //   }
-  //   else 
-  //   {
-  //     if (arg == 0) cmd = chr;                 // Command identifier (single-letter).
-  //     else if (arg == 1) argv1[index++] = chr; // First argument.
-  //     else if (arg == 2) argv2[index++] = chr; // Second argument.
-  //   }
-  // }
 }
