@@ -18,9 +18,6 @@ OdriveMotor::OdriveMotor( const long baud_rate, const int rx_pin, const int tx_p
 {
   // start the serial communication 
   odrive_serial_.begin( baud_rate ); 
-  
-  Serial.print( "BLDC Motor Constructed with baud rate: " );
-  Serial.println( baud_rate ); 
   setBaudRate( baud_rate );  
 }
 
@@ -38,7 +35,8 @@ double OdriveMotor::getPosition()
 {
   // get feedback from odrive 
   ODriveFeedback feedback = odrive_.getFeedback(); 
-  return feedback.pos; 
+//  return feedback.pos; 
+  return 1.0; 
 }
 
 double OdriveMotor::getVelocity()

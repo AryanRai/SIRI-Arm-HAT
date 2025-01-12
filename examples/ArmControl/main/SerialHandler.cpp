@@ -16,7 +16,6 @@ SerialHandler::~SerialHandler()
 
 void SerialHandler::readCommand() 
 {
-  resetArgumentArray(); 
   while ( Serial.available() > 0 ) 
   {
     if ( new_word_ ) 
@@ -42,13 +41,16 @@ void SerialHandler::resetArgumentArray()
   new_word_ = true; 
 }
 
-void SerialHandler::storeArgument()
+void SerialHandler::storeArgument() 
 {
+//  Serial.print("Storing argument: "); 
+//  Serial.println( cmd_buffer_ ); 
+  
   cmd_buffer_[cmd_index_] = '\0'; // null-terminate the string 
   strcpy( argument_arr_[arg_index_++], cmd_buffer_ ); // copy into command array 
 
-  // prep for next iteration 
-  new_word_ = true; // start new word 
+  // start new word 
+  new_word_ = true; 
 } 
 
 void SerialHandler::processCharacter() 
@@ -67,19 +69,19 @@ void SerialHandler::processCharacter()
   }
 }
 
-void SerialHandler::handleCommandEnd()
+void SerialHandler::handleCommandEnd() 
 {
   storeArgument(); 
-  Serial.print( "Received command: " ); 
-  for ( uint8_t i=0; i <= arg_index_; ++i ) 
-  {
-    Serial.print("|"); 
-    Serial.print(argument_arr_[i]); 
-    Serial.print("|"); 
 
-    Serial.print(" "); 
-  }
-  Serial.println(); 
+//  Serial.print("Got command: {"); 
+//  for (int i=0; i<=arg_index_; ++i)
+//  {
+//    Serial.print(" |"); 
+//    Serial.print(argument_arr_[i]);
+//    Serial.print("|");  
+//  }
+//  Serial.println("}"); 
+//  Serial.flush(); 
   
   runCommand(); 
   resetArgumentArray(); 
@@ -87,14 +89,18 @@ void SerialHandler::handleCommandEnd()
 
 void SerialHandler::handleCharacter()
 {
-  if ( cmd_index_ < CMD_STRING_BUFFERSIZE - 1) // prevent buffer overflow 
+  if ( cmd_index_ < CMD_STRING_BUFFERSIZE - 1 ) // prevent buffer overflow 
   {
     cmd_buffer_[cmd_index_++] = chr_; 
+//    Serial.print("Current cmd_buffer_: "); 
+//    Serial.print(cmd_buffer_); 
+//    Serial.print(", at index: "); 
+//    Serial.println(cmd_index_-1); 
   }
   else
   {
     // handle buffer overflow 
-    Serial.println( "Command too long!" ); 
+    Serial.println( "Error: Command too long!" ); 
     new_word_ = true; 
   }
 }
@@ -142,13 +148,26 @@ void SerialHandler::runCommand()
     {
       // TODO 
 //      odrive.setVelocity( arg1 ); // only one motor for now     
-//      Serial.println("DONE");     
 
       // make an array of doubles 
-      double cmd_vels[arg_index_+1]; 
+      uint8_t num_motors = arm_controller_.getNumMotors(); 
+      double cmd_vels[num_motors]; 
       argsToDoubles( cmd_vels ); 
       arm_controller_.setMotorVel( cmd_vels ); 
+      Serial.print("Motors set to (rad/s): ");     
+      for ( uint8_t i=0; i<num_motors; ++i )
+      {
+        Serial.print(cmd_vels[i]); 
+        Serial.print(" "); 
+      }
+      Serial.println(); 
       break; 
+    }
+    default:
+    {
+      Serial.print("Error: Command '"); 
+      Serial.print(cmd); 
+      Serial.println("' not recognised"); 
     }
   }
 }
@@ -158,13 +177,8 @@ void SerialHandler::argsToDoubles( double* cmd_vels ) const
   // iterate over all motors 
   uint8_t motor_num = arm_controller_.getNumMotors(); 
   
-  for ( uint8_t i=1; i<=motor_num; ++i) 
+  for ( uint8_t i=0; i<motor_num; ++i) 
   {
-    Serial.print("Setting motor: "); 
-    Serial.print(i); 
-    Serial.print(" to velocity: "); 
-    Serial.print(argument_arr_[i]); 
-    Serial.println("rad/s"); 
-    cmd_vels[i] = atof(argument_arr_[i]); 
+    cmd_vels[i] = atof(argument_arr_[i+1]); 
   }
 }

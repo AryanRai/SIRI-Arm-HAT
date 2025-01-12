@@ -19,15 +19,10 @@ ArmController::~ArmController()
 
 void ArmController::initArm( char argument_arr[50][10], const int arg_num ) 
 {
-  // command structure: "i type1 pin11 pin12 baud1 type2 pin21 pin 22 baud2 ... typeN pinN1 pinN2 baudN\r\n" 
-  Serial.print("Number of arguments: "); 
-  Serial.println(arg_num); 
-  
   // iterate over arguments, ignoring the first 
+  Serial.println("Initialising arm"); 
   for ( uint8_t i = 1; i < arg_num+1; i += 4 ) 
   { 
-    Serial.print("i: ");
-    Serial.println(i);  
     // chunks of 4
     char motor_type[MOTOR_TYPE_BUFFERSIZE]; 
     strcpy( motor_type, argument_arr[i] ); // copy across 
@@ -44,12 +39,12 @@ void ArmController::addMotor( const char* type, const int pin1, const int pin2, 
   if ( strcmp( "odrive", type ) == 0 ) 
   {
     // add an odrive motor class 
-    Serial.print("Adding ODrive Motor with type odrive, pin1: " );
-    Serial.print(pin1); 
-    Serial.print(", pin2: "); 
-    Serial.print(pin2); 
-    Serial.print(", baud: "); 
-    Serial.println(baud);   
+//    Serial.print("Adding ODrive Motor with type odrive, pin1: " );
+//    Serial.print(pin1); 
+//    Serial.print(", pin2: "); 
+//    Serial.print(pin2); 
+//    Serial.print(", baud: "); 
+//    Serial.println(baud);   
     motors_[motor_num_++] = new OdriveMotor( baud, pin1, pin2 ); 
   }
   else if ( strcmp( "stepper", type ) == 0 ) 
@@ -62,9 +57,9 @@ void ArmController::addMotor( const char* type, const int pin1, const int pin2, 
   }
   else
   {
-    Serial.print( "Motor type '" ); 
-    Serial.print( type ); 
-    Serial.println( "' not recognised" );  
+//    Serial.print( "Error: Motor type '" ); 
+//    Serial.print( type ); 
+//    Serial.println( "' not recognised" ); 
   }
 } 
 void ArmController::setMotorVel( const double* cmd_vels ) 
