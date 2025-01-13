@@ -5,11 +5,6 @@
 // ---------- MOTOR ---------- // 
 Motor::Motor() {} 
 
-void Motor::setBaudRate( const long baud_rate )
-{
-  baud_rate_ = baud_rate; 
-}
-
 // -------------------- BLDC MOTOR -------------------- // 
 OdriveMotor::OdriveMotor( const long baud_rate, const int rx_pin, const int tx_pin ) 
   : //Motor(),                          // init the base class 
@@ -18,7 +13,6 @@ OdriveMotor::OdriveMotor( const long baud_rate, const int rx_pin, const int tx_p
 {
   // start the serial communication 
   odrive_serial_.begin( baud_rate ); 
-  setBaudRate( baud_rate );  
 }
 
 void OdriveMotor::setVelocity( const double vel ) 

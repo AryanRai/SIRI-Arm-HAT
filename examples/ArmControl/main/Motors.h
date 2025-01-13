@@ -12,14 +12,13 @@ class Motor
     Motor(); 
     virtual ~Motor() {} 
 
-    virtual void setBaudRate( const long baud_rate ); 
     virtual void setVelocity( const double vel ) = 0; 
     virtual void setPosition( const double pos ) = 0; 
     virtual double getPosition() = 0;
     virtual double getVelocity() = 0; 
     
   protected:
-    long baud_rate_; 
+
 }; 
 
 class OdriveMotor : public Motor 
