@@ -4,6 +4,7 @@
 
 #include "commands.h"
 #include "ArmController.h"
+#include <avr/wdt.h> // Include for watchdog control
 
 
 class SerialHandler 
@@ -28,6 +29,9 @@ class SerialHandler
     void resetArgumentArray(); 
     void runCommand(); 
     void argsToDoubles( double* cmd_vels ) const; 
+    void resetArduino(); 
+    void readMotorStates(); 
+    void setMotorVels(); 
 
     // --- DATA --- // 
     // handy variables to help read from serial 

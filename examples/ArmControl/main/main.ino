@@ -6,7 +6,6 @@
 #include "SerialHandler.h" 
 #include <SoftwareSerial.h> 
 
-
 // start the serial handler 
 SerialHandler mySerialHandler; 
 

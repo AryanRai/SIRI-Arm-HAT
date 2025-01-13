@@ -117,50 +117,21 @@ void SerialHandler::runCommand()
       arm_init_ = true; 
       break; 
     }
+
+    case RESET_ARDUINO: 
+    {
+      resetArduino(); 
+      break; 
+    }
       
     case READ_MOTOR_STATES:
     {
-      // get info from the arm controller 
-      uint8_t motor_num = arm_controller_.getNumMotors(); 
-      double pos_arr[motor_num]; 
-      double vel_arr[motor_num]; 
-
-      // get the motor states 
-      arm_controller_.getMotorStates( pos_arr, vel_arr ); 
-
-      // iterate over all motors and get their state 
-      bool first = true; 
-      for ( uint8_t i=0; i<motor_num; ++i ) 
-      {
-
-        if (!first) { Serial.print(" "); }
-        else { first = false; } 
-        
-        Serial.print(pos_arr[i]); 
-        Serial.print(" "); 
-        Serial.print(vel_arr[i]); 
-      }
-      Serial.println(); 
-      
+      readMotorStates(); 
       break;
     }
     case MOTOR_SPEEDS: 
     {
-      // TODO 
-//      odrive.setVelocity( arg1 ); // only one motor for now     
-
-      // make an array of doubles 
-      uint8_t num_motors = arm_controller_.getNumMotors(); 
-      double cmd_vels[num_motors]; 
-      argsToDoubles( cmd_vels ); 
-      arm_controller_.setMotorVel( cmd_vels ); 
-      Serial.print("Motors set to (rad/s): ");     
-      for ( uint8_t i=0; i<num_motors; ++i )
-      {
-        Serial.print(cmd_vels[i]); 
-        Serial.print(" "); 
-      }
-      Serial.println(); 
+      setMotorVels(); 
       break; 
     }
     default:
@@ -181,4 +152,56 @@ void SerialHandler::argsToDoubles( double* cmd_vels ) const
   {
     cmd_vels[i] = atof(argument_arr_[i+1]); 
   }
+}
+
+void SerialHandler::resetArduino()
+{
+   Serial.println("Reseting..."); 
+   wdt_enable(WDTO_15MS); // Enable the watchdog with a 15ms timeout 
+   while (true) { delay(1); } // Wait for the watchdog to trigger a reset
+}
+
+void SerialHandler::readMotorStates()
+{
+  // get info from the arm controller 
+  uint8_t motor_num = arm_controller_.getNumMotors(); 
+  double pos_arr[motor_num]; 
+  double vel_arr[motor_num]; 
+
+  // get the motor states 
+  arm_controller_.getMotorStates( pos_arr, vel_arr ); 
+
+  // iterate over all motors and get their state 
+  bool first = true; 
+  for ( uint8_t i=0; i<motor_num; ++i ) 
+  {
+
+    if (!first) { Serial.print(" "); }
+    else { first = false; } 
+    
+    Serial.print(pos_arr[i]); 
+    Serial.print(" "); 
+    Serial.print(vel_arr[i]); 
+  }
+  Serial.println(); 
+}
+
+void SerialHandler::setMotorVels()
+{
+  // make an array of doubles 
+  uint8_t num_motors = arm_controller_.getNumMotors(); 
+  double cmd_vels[num_motors]; 
+  argsToDoubles( cmd_vels ); 
+
+  // send to the arm controller 
+  arm_controller_.setMotorVel( cmd_vels ); 
+
+  // print to the serial for validation 
+  Serial.print("Motors set to (rad/s): ");     
+  for ( uint8_t i=0; i<num_motors; ++i )
+  {
+    Serial.print(cmd_vels[i]); 
+    Serial.print(" "); 
+  }
+  Serial.println(); 
 }
