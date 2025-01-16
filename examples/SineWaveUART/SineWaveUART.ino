@@ -1,5 +1,5 @@
  
-#include <ODriveUART.h>
+#include "ODriveUART.h"
 #include <SoftwareSerial.h>
 
 // Documentation for this example can be found here:
@@ -36,14 +36,13 @@ unsigned long baudrate = 19200; // Must match what you configure on the ODrive (
 // HardwareSerial& odrive_serial = Serial1;
 // int baudrate = 115200; // Must match what you configure on the ODrive (see docs for details)
 
-
 ODriveUART odrive(odrive_serial);
 
 void setup() {
-  odrive_serial.begin(baudrate);
-
   Serial.begin(115200); // Serial to PC
+  Serial.println("Serial has started!"); 
   
+  odrive_serial.begin(baudrate);
   delay(10);
 
   Serial.println("Waiting for ODrive...");

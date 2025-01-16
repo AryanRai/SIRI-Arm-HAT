@@ -127,39 +127,41 @@ int runCommand()
   arg1 = atof(argv1);
   arg2 = atof(argv2);
 
+  Serial.print("Running command: "); 
+  Serial.println( cmd ); 
   switch ( cmd ) 
   {
     case GET_BAUDRATE:
       Serial.println(COMP_ARDUINO_BAUDRATE);
       break;
 
-    case ANALOG_READ:
-      Serial.println(analogRead(arg1));
-      break;
-
-    case DIGITAL_READ:
-      Serial.println(digitalRead(arg1));
-      break;
-
     case READ_MOTOR_STATES:
-      // get motor feedback 
-//      ODriveFeedback feedback = odrive.getFeedback();
-      
-//      Serial.print(feedback.pos); // print position  
-//      Serial.print(" "); 
-//      Serial.println(feedback.vel); // print veocity 
+    {
+      Serial.println("reading motor states");
 
-        Serial.print("0.0"); 
-        Serial.print(" "); 
-        Serial.println("0.0"); 
+      // get motor feedback 
+      ODriveFeedback feedback = odrive.getFeedback();
+      
+      Serial.print(feedback.pos); // print position  
+      Serial.print(" "); 
+      Serial.println(feedback.vel); // print veocity 
+
+        // Serial.print("0.0"); 
+        // Serial.print(" "); 
+        // Serial.println("0.0"); 
       break; 
+    }
 
     case MOTOR_SPEEDS: 
+    {
       // TODO 
-      odrive.setVelocity( arg1 ); // only one motor for now     
+      Serial.println("Setting motor speeds");
+
+      odrive.setPosition( arg1 ); // only one motor for now     
       Serial.println("DONE");     
       break; 
-  }
+    }  
+}
 }
 
 void setup()
@@ -172,10 +174,10 @@ void setup()
 
   Serial.println("Waiting for ODrive...");
 //  TODO: UNCOMMENTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
-//  while (odrive.getState() == AXIS_STATE_UNDEFINED)
-//  {
-//    delay(100);
-//  }
+  while (odrive.getState() == AXIS_STATE_UNDEFINED)
+  {
+   delay(100);
+  }
 
   Serial.println("found ODrive");
 
@@ -184,12 +186,12 @@ void setup()
 
   Serial.println("Enabling closed loop control...");
 //  TODO: UNCOMMENTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
-//  while (odrive.getState() != AXIS_STATE_CLOSED_LOOP_CONTROL)
-//  {
-//    odrive.clearErrors();
-//    odrive.setState(AXIS_STATE_CLOSED_LOOP_CONTROL);
-//    delay(10);
-//  }
+   while (odrive.getState() != AXIS_STATE_CLOSED_LOOP_CONTROL)
+   {
+     odrive.clearErrors();
+     odrive.setState(AXIS_STATE_CLOSED_LOOP_CONTROL);
+     delay(10);
+   }
 
   Serial.println("ODrive running!");
 }

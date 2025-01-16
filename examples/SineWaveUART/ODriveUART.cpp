@@ -3,7 +3,7 @@
 // Documentation: https://docs.odriverobotics.com/v/latest/guides/arduino-uart-guide.html
 
 #include "Arduino.h"
-#include "ODriveUART.h" 
+#include "ODriveUART.h"
 
 static const int kMotorNumber = 0;
 
@@ -12,10 +12,7 @@ template<class T> inline Print& operator <<(Print &obj,     T arg) { obj.print(a
 template<>        inline Print& operator <<(Print &obj, float arg) { obj.print(arg, 4); return obj; }
 
 ODriveUART::ODriveUART(Stream& serial)
-    : serial_(serial) 
-{
-  Serial.println("Odrive UART initialised"); 
-}
+    : serial_(serial) {}
 
 void ODriveUART::clearErrors() {
     serial_ << "sc\n";
