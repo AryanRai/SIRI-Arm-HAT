@@ -36,15 +36,13 @@ unsigned long baudrate = 19200; // Must match what you configure on the ODrive (
 // HardwareSerial& odrive_serial = Serial1;
 // int baudrate = 115200; // Must match what you configure on the ODrive (see docs for details)
 
-
 ODriveUART odrive(odrive_serial);
 
 void setup() {
-  odrive_serial.begin(baudrate);
-
   Serial.begin(115200); // Serial to PC
   Serial.println("Serial initialised"); 
   
+  odrive_serial.begin(baudrate);
   delay(10);
 
   Serial.println("Waiting for ODrive...");

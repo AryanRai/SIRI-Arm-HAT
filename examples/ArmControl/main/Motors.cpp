@@ -3,7 +3,10 @@
 
 
 // ---------- MOTOR ---------- // 
-Motor::Motor() {} 
+Motor::Motor() 
+{
+  Serial.println("Motor initialised");
+} 
 
 // -------------------- BLDC MOTOR -------------------- // 
 OdriveMotor::OdriveMotor( const long baud_rate, const int rx_pin, const int tx_pin ) 

@@ -26,10 +26,10 @@ void ArmController::initArm( char argument_arr[ARG_ARRAY_BUFFERSIZE][CMD_STRING_
     // chunks of 4
     char motor_type[MOTOR_TYPE_BUFFERSIZE]; 
     strcpy( motor_type, argument_arr[i] ); // copy across 
-    int pin1 = atoi(argument_arr[i+1]); 
-    int pin2 = atoi(argument_arr[i+2]); 
+    int tx_pin = atoi(argument_arr[i+1]); 
+    int rx_pin = atoi(argument_arr[i+2]); 
     long baud = atol(argument_arr[i+3]); 
-    addMotor( motor_type, pin1, pin2, baud ); 
+    addMotor( motor_type, tx_pin, rx_pin, baud ); 
   }
 } 
 
@@ -62,6 +62,7 @@ void ArmController::addMotor( const char* type, const int pin1, const int pin2, 
 //    Serial.println( "' not recognised" ); 
   }
 } 
+
 void ArmController::setMotorVel( const double* cmd_vels ) 
 {
   for ( uint8_t i = 0; i < motor_num_; ++i )

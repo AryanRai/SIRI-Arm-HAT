@@ -12,7 +12,10 @@ template<class T> inline Print& operator <<(Print &obj,     T arg) { obj.print(a
 template<>        inline Print& operator <<(Print &obj, float arg) { obj.print(arg, 4); return obj; }
 
 ODriveUART::ODriveUART(Stream& serial)
-    : serial_(serial) {}
+    : serial_(serial) 
+{
+  Serial.println("Odrive UART initialised"); 
+}
 
 void ODriveUART::clearErrors() {
     serial_ << "sc\n";
