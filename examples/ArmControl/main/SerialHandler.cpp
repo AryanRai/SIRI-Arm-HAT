@@ -123,7 +123,6 @@ void SerialHandler::runCommand()
       resetArduino(); 
       break; 
     }
-      
     case READ_MOTOR_STATES:
     {
       readMotorStates(); 
@@ -132,6 +131,11 @@ void SerialHandler::runCommand()
     case MOTOR_SPEEDS: 
     {
       setMotorVels(); 
+      break; 
+    }
+    case MOTOR_POSITIONS:
+    {
+      setMotorPos(); 
       break; 
     }
     default:
@@ -201,6 +205,26 @@ void SerialHandler::setMotorVels()
   for ( uint8_t i=0; i<num_motors; ++i )
   {
     Serial.print(cmd_vels[i]); 
+    Serial.print(" "); 
+  }
+  Serial.println(); 
+}
+
+void SerialHandler::setMotorPos()
+{
+  // make an array of doubles 
+  uint8_t num_motors = arm_controller_.getNumMotors(); 
+  double cmd_pos[num_motors]; 
+  argsToDoubles( cmd_pos ); 
+
+  // send to the arm controller 
+  arm_controller_.setMotorPos( cmd_pos ); 
+
+  // print to the serial for validation 
+  Serial.print("Motors set to (rad): "); 
+  for ( uint8_t i=0; i<num_motors; ++i )
+  {
+    Serial.print(cmd_pos[i]); 
     Serial.print(" "); 
   }
   Serial.println(); 

@@ -1,5 +1,5 @@
  
-#include <ODriveUART.h>
+#include "ODriveUART.h"
 #include <SoftwareSerial.h>
 
 // Documentation for this example can be found here:
@@ -43,6 +43,7 @@ void setup() {
   odrive_serial.begin(baudrate);
 
   Serial.begin(115200); // Serial to PC
+  Serial.println("Serial initialised"); 
   
   delay(10);
 

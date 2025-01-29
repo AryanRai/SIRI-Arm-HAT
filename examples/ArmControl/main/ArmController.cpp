@@ -17,7 +17,7 @@ ArmController::~ArmController()
   }
 }
 
-void ArmController::initArm( char argument_arr[50][10], const int arg_num ) 
+void ArmController::initArm( char argument_arr[ARG_ARRAY_BUFFERSIZE][CMD_STRING_BUFFERSIZE], const int arg_num ) 
 {
   // iterate over arguments, ignoring the first 
   Serial.println("Initialising arm"); 
@@ -67,6 +67,13 @@ void ArmController::setMotorVel( const double* cmd_vels )
   for ( uint8_t i = 0; i < motor_num_; ++i )
   {
     motors_[i]->setVelocity( cmd_vels[i] ); 
+  } 
+} 
+void ArmController::setMotorPos( const double* cmd_pos ) 
+{
+  for ( uint8_t i = 0; i < motor_num_; ++i )
+  {
+    motors_[i]->setPosition( cmd_pos[i] ); 
   } 
 } 
 void ArmController::getMotorStates( double* pos_arr, double* vel_arr ) const 

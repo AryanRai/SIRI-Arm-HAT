@@ -33,7 +33,7 @@ class OdriveMotor : public Motor
       
       // normal odrive handle 
       SoftwareSerial odrive_serial_;
-      ODriveUART odrive_; 
+      ODriveUART* odrive_; 
 
   private: 
       long baud_rate_; 

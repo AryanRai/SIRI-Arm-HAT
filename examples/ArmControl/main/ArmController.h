@@ -2,6 +2,7 @@
 #define ARMCONTROLLER_H
 
 #include "Motors.h"
+#include "commands.h"
 
 class ArmController
 {
@@ -9,9 +10,10 @@ class ArmController
     ArmController( const int dofs ); 
     ~ArmController(); 
 
-    void initArm( char argument_arr[50][10], const int arg_num ); 
+    void initArm( char argument_arr[ARG_ARRAY_BUFFERSIZE][CMD_STRING_BUFFERSIZE], const int arg_num ); 
     void addMotor( const char* type, const int pin1, const int pin2, const long baud ); 
     void setMotorVel( const double* cmd_vels ); 
+    void setMotorPos( const double* cmd_pos ); 
     void getMotorStates( double* pos_arr, double* vel_arr ) const; 
     int getNumMotors() const; 
 

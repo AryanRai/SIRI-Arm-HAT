@@ -18,8 +18,6 @@ class SerialHandler
 
   private: 
     // --- STATIC CONSTANTS --- // 
-    static const int CMD_STRING_BUFFERSIZE = 10; 
-    static const int ARG_ARRAY_BUFFERSIZE = 50; 
   
     // --- METHODS --- // 
     void processCharacter(); 
@@ -32,6 +30,7 @@ class SerialHandler
     void resetArduino(); 
     void readMotorStates(); 
     void setMotorVels(); 
+    void setMotorPos(); 
 
     // --- DATA --- // 
     // handy variables to help read from serial 
