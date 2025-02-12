@@ -17,7 +17,8 @@ class SerialHandler
     void readCommand(); 
 
   private: 
-    // --- STATIC CONSTANTS --- // 
+    // --- CONSTANTS --- // 
+    static const char ETX = 0x03; // end of text 
   
     // --- METHODS --- // 
     void processCharacter(); 

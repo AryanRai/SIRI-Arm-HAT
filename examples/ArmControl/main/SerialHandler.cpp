@@ -31,7 +31,6 @@ void SerialHandler::readCommand()
 
 void SerialHandler::resetArgumentArray()
 {
-//  memset( argument_arr_, 0, ARG_ARRAY_BUFFERSIZE ); 
   // iterate over the argument array and set to \0 
   for ( uint8_t i=0; i < arg_index_; ++i )
   {
@@ -43,9 +42,6 @@ void SerialHandler::resetArgumentArray()
 
 void SerialHandler::storeArgument() 
 {
-//  Serial.print("Storing argument: "); 
-//  Serial.println( cmd_buffer_ ); 
-  
   cmd_buffer_[cmd_index_] = '\0'; // null-terminate the string 
   strcpy( argument_arr_[arg_index_++], cmd_buffer_ ); // copy into command array 
 
@@ -72,16 +68,6 @@ void SerialHandler::processCharacter()
 void SerialHandler::handleCommandEnd() 
 {
   storeArgument(); 
-
-//  Serial.print("Got command: {"); 
-//  for (int i=0; i<=arg_index_; ++i)
-//  {
-//    Serial.print(" |"); 
-//    Serial.print(argument_arr_[i]);
-//    Serial.print("|");  
-//  }
-//  Serial.println("}"); 
-//  Serial.flush(); 
   
   runCommand(); 
   resetArgumentArray(); 
@@ -92,10 +78,6 @@ void SerialHandler::handleCharacter()
   if ( cmd_index_ < CMD_STRING_BUFFERSIZE - 1 ) // prevent buffer overflow 
   {
     cmd_buffer_[cmd_index_++] = chr_; 
-//    Serial.print("Current cmd_buffer_: "); 
-//    Serial.print(cmd_buffer_); 
-//    Serial.print(", at index: "); 
-//    Serial.println(cmd_index_-1); 
   }
   else
   {
@@ -138,6 +120,10 @@ void SerialHandler::runCommand()
       setMotorPos(); 
       break; 
     }
+    case EMPTY_COMMAND:
+    {
+      Serial.println("Empty command received"); 
+    }
     default:
     {
       Serial.print("Error: Command '"); 
@@ -145,6 +131,8 @@ void SerialHandler::runCommand()
       Serial.println("' not recognised"); 
     }
   }
+  Serial.println(ETX); // ETX (End of Text, 0x03) 
+  Serial.flush(); 
 }
 
 void SerialHandler::argsToDoubles( double* cmd_vels ) const

@@ -11,7 +11,7 @@ class ArmController
     ~ArmController(); 
 
     void initArm( char argument_arr[ARG_ARRAY_BUFFERSIZE][CMD_STRING_BUFFERSIZE], const int arg_num ); 
-    void addMotor( const char* type, const int pin1, const int pin2, const long baud ); 
+    void addMotor( const char* type, const long reduction_ratio, const int pin1, const int pin2, const long baud ); 
     void setMotorVel( const double* cmd_vels ); 
     void setMotorPos( const double* cmd_pos ); 
     void getMotorStates( double* pos_arr, double* vel_arr ) const; 
@@ -19,8 +19,8 @@ class ArmController
 
   private:
     // --- STATIC CONSTANTS --- // 
-    static const int MAX_MOTOR_NUM = 10; 
-    static const int MOTOR_TYPE_BUFFERSIZE = 10; // can only be odrive, stepper or servo 
+    static const int MAX_MOTOR_NUM = 3; 
+    static const int MOTOR_TYPE_BUFFERSIZE = 7; // can only be odrive, stepper or servo 
 
     // --- DATA --- // 
     Motor* motors_[MAX_MOTOR_NUM]; 

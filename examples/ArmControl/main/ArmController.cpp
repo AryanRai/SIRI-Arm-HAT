@@ -21,31 +21,37 @@ void ArmController::initArm( char argument_arr[ARG_ARRAY_BUFFERSIZE][CMD_STRING_
 {
   // iterate over arguments, ignoring the first 
   Serial.println("Initialising arm"); 
-  for ( uint8_t i = 1; i < arg_num+1; i += 4 ) 
+  for ( uint8_t i = 1; i < arg_num; i += 5 ) // 5 arguments per motor 
   { 
-    // chunks of 4
+    // chunks of 5
     char motor_type[MOTOR_TYPE_BUFFERSIZE]; 
     strcpy( motor_type, argument_arr[i] ); // copy across 
-    int tx_pin = atoi(argument_arr[i+1]); 
-    int rx_pin = atoi(argument_arr[i+2]); 
-    long baud = atol(argument_arr[i+3]); 
-    addMotor( motor_type, tx_pin, rx_pin, baud ); 
+    long red_ratio = atoi(argument_arr[i+1]); 
+    int tx_pin = atoi(argument_arr[i+2]); 
+    int rx_pin = atoi(argument_arr[i+3]); 
+    long baud = atol(argument_arr[i+4]); 
+
+    Serial.print("initialising motor with type: "); 
+    Serial.print(motor_type); 
+    Serial.print(", baud: ");
+    Serial.print(baud); 
+    Serial.print(", red_ratio: "); 
+    Serial.print(red_ratio); 
+    Serial.print(", rx_pin: "); 
+    Serial.print(rx_pin); 
+    Serial.print(", tx_pin: "); 
+    Serial.println(tx_pin); 
+    addMotor( motor_type, red_ratio, tx_pin, rx_pin, baud ); 
   }
 } 
 
-void ArmController::addMotor( const char* type, const int pin1, const int pin2, const long baud ) 
+void ArmController::addMotor( const char* type, const long reduction_ratio, const int pin1, const int pin2, const long baud ) 
 {
   // check the type  
   if ( strcmp( "odrive", type ) == 0 ) 
   {
-    // add an odrive motor class 
-//    Serial.print("Adding ODrive Motor with type odrive, pin1: " );
-//    Serial.print(pin1); 
-//    Serial.print(", pin2: "); 
-//    Serial.print(pin2); 
-//    Serial.print(", baud: "); 
-//    Serial.println(baud);   
-    motors_[motor_num_++] = new OdriveMotor( baud, pin1, pin2 ); 
+    Serial.println("Making new odrive motor"); 
+    motors_[motor_num_++] = new OdriveMotor( baud, reduction_ratio, pin1, pin2 ); 
   }
   else if ( strcmp( "stepper", type ) == 0 ) 
   {

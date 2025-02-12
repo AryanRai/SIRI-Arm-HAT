@@ -11,9 +11,7 @@ SerialHandler mySerialHandler;
 
 void setup() 
 {
-  Serial.begin(115200); 
-//  Serial.println("Serial successfully initialised"); 
-//  Serial.flush(); 
+  Serial.begin(115200);  
 }
 
 void loop()
