@@ -26,28 +26,31 @@ class Motor
 class OdriveMotor : public Motor 
 { 
   public: 
-      OdriveMotor( const long reduction_ratio, const long baud_rate, const int tx_pin, const int rx_pin ); 
+    OdriveMotor( const long reduction_ratio, const long baud_rate, const int tx_pin, const int rx_pin ); 
 
-      void setVelocity( const double vel ); 
-      void setPosition( const double pos ); 
-      double getPosition(); 
-      double getVelocity(); 
+    void setVelocity( const double vel ); 
+    void setPosition( const double pos ); 
+    double getPosition(); 
+    double getVelocity(); 
 
   private: 
-      // ----- CONSTANTS ----- // 
-      const float MOVEMENT_SPEED = 2.0; // Rad/s
-      const float MOVEMENT_TORQUE = 1.0; // Nm 
+    // ----- SUBCLASSES/STRUCTS ----- // 
 
-//      // ----- METHODS ----- // 
-//      void printOdriveState();
-//      void printOdriveErrors();
+    // ----- CONSTANTS ----- // 
+    const float MOVEMENT_SPEED = 2.0; // Rad/s
+    const float MOVEMENT_TORQUE = 1.0; // Nm 
+    const int ATTEMPT_LIMIT = 100; 
 
-      // ----- DATA ----- // 
-      // normal odrive handle 
-      SoftwareSerial odrive_serial_;
-      ODriveUART* odrive_; 
-      
-      long baud_rate_; 
+    // ----- METHODS ----- // 
+    //void printOdriveState();
+    void printOdriveErrors();
+
+    // ----- DATA ----- // 
+    // normal odrive handle 
+    SoftwareSerial odrive_serial_;
+    ODriveUART* odrive_; 
+    
+    long baud_rate_; 
 }; 
 
 #endif 

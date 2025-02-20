@@ -22,9 +22,7 @@ OdriveMotor::OdriveMotor( const long baud_rate, const long reduction_ratio, cons
   int attempts = 0; 
   while ( odrive_->getState() == AXIS_STATE_UNDEFINED ) 
   {
-//    printOdriveErrors(); 
-
-    if ( attempts > 25 )
+    if ( attempts > ATTEMPT_LIMIT )
     {
       Serial.println("Error: Failed to connect to ODrive");
       success = false;  
@@ -37,18 +35,18 @@ OdriveMotor::OdriveMotor( const long baud_rate, const long reduction_ratio, cons
     
     delay(100);
   }
+  printOdriveErrors(); 
+
 
   // Enable closed loop control 
   Serial.println("Enabling closed loop control"); 
   attempts = 0; 
   while ( odrive_->getState() != AXIS_STATE_CLOSED_LOOP_CONTROL ) 
   {
-//    printOdriveErrors(); 
-
     odrive_->clearErrors();
     odrive_->setState(AXIS_STATE_CLOSED_LOOP_CONTROL);
 
-    if ( attempts > 25 )
+    if ( attempts > ATTEMPT_LIMIT )
     {
       Serial.println("Error: Failed to connect to ODrive"); 
       success = false; 
@@ -60,6 +58,7 @@ OdriveMotor::OdriveMotor( const long baud_rate, const long reduction_ratio, cons
     }    
     delay(10);
   }
+  printOdriveErrors(); 
 
   if (success)
   {
@@ -86,6 +85,8 @@ double OdriveMotor::getPosition()
 {
   // get feedback from odrive 
   ODriveFeedback feedback = odrive_->getFeedback(); 
+  Serial.print("receieved position from odrive: "); 
+  Serial.println(feedback.pos); 
   return feedback.pos / reduction_ratio_; 
 }
 
@@ -93,65 +94,19 @@ double OdriveMotor::getVelocity()
 {
   // get feedback from odrive 
   ODriveFeedback feedback = odrive_->getFeedback(); 
+  Serial.print("receieved velocity from odrive: "); 
+  Serial.println(feedback.vel); 
   return feedback.vel / reduction_ratio_; 
 }
 
-//// Function that prints active errors to the Serial monitor
-//void OdriveMotor::printOdriveErrors()  
-//{
-//  uint32_t errors = atol( odrive_->getParameterAsString( "axis0.active_errors" ).c_str() ); 
-//  
-//  if (errors == ODRIVE_ERROR_NONE) {
-//    Serial.println("No errors (ODRIVE_ERROR_NONE)");
-//    return;
-//  }
-//
-//  Serial.println("Active Errors:");
-//  if (errors & ODRIVE_ERROR_INITIALIZING)
-//    Serial.println("  ODRIVE_ERROR_INITIALIZING");
-//  if (errors & ODRIVE_ERROR_SYSTEM_LEVEL)
-//    Serial.println("  ODRIVE_ERROR_SYSTEM_LEVEL");
-//  if (errors & ODRIVE_ERROR_TIMING_ERROR)
-//    Serial.println("  ODRIVE_ERROR_TIMING_ERROR");
-//  if (errors & ODRIVE_ERROR_MISSING_ESTIMATE)
-//    Serial.println("  ODRIVE_ERROR_MISSING_ESTIMATE");
-//  if (errors & ODRIVE_ERROR_BAD_CONFIG)
-//    Serial.println("  ODRIVE_ERROR_BAD_CONFIG");
-//  if (errors & ODRIVE_ERROR_DRV_FAULT)
-//    Serial.println("  ODRIVE_ERROR_DRV_FAULT");
-//  if (errors & ODRIVE_ERROR_MISSING_INPUT)
-//    Serial.println("  ODRIVE_ERROR_MISSING_INPUT");
-//  if (errors & ODRIVE_ERROR_DC_BUS_OVER_VOLTAGE)
-//    Serial.println("  ODRIVE_ERROR_DC_BUS_OVER_VOLTAGE");
-//  if (errors & ODRIVE_ERROR_DC_BUS_UNDER_VOLTAGE)
-//    Serial.println("  ODRIVE_ERROR_DC_BUS_UNDER_VOLTAGE");
-//  if (errors & ODRIVE_ERROR_DC_BUS_OVER_CURRENT)
-//    Serial.println("  ODRIVE_ERROR_DC_BUS_OVER_CURRENT");
-//  if (errors & ODRIVE_ERROR_DC_BUS_OVER_REGEN_CURRENT)
-//    Serial.println("  ODRIVE_ERROR_DC_BUS_OVER_REGEN_CURRENT");
-//  if (errors & ODRIVE_ERROR_CURRENT_LIMIT_VIOLATION)
-//    Serial.println("  ODRIVE_ERROR_CURRENT_LIMIT_VIOLATION");
-//  if (errors & ODRIVE_ERROR_MOTOR_OVER_TEMP)
-//    Serial.println("  ODRIVE_ERROR_MOTOR_OVER_TEMP");
-//  if (errors & ODRIVE_ERROR_INVERTER_OVER_TEMP)
-//    Serial.println("  ODRIVE_ERROR_INVERTER_OVER_TEMP");
-//  if (errors & ODRIVE_ERROR_VELOCITY_LIMIT_VIOLATION)
-//    Serial.println("  ODRIVE_ERROR_VELOCITY_LIMIT_VIOLATION");
-//  if (errors & ODRIVE_ERROR_POSITION_LIMIT_VIOLATION)
-//    Serial.println("  ODRIVE_ERROR_POSITION_LIMIT_VIOLATION");
-//  if (errors & ODRIVE_ERROR_WATCHDOG_TIMER_EXPIRED)
-//    Serial.println("  ODRIVE_ERROR_WATCHDOG_TIMER_EXPIRED");
-//  if (errors & ODRIVE_ERROR_ESTOP_REQUESTED)
-//    Serial.println("  ODRIVE_ERROR_ESTOP_REQUESTED");
-//  if (errors & ODRIVE_ERROR_SPINOUT_DETECTED)
-//    Serial.println("  ODRIVE_ERROR_SPINOUT_DETECTED");
-//  if (errors & ODRIVE_ERROR_BRAKE_RESISTOR_DISARMED)
-//    Serial.println("  ODRIVE_ERROR_BRAKE_RESISTOR_DISARMED");
-//  if (errors & ODRIVE_ERROR_THERMISTOR_DISCONNECTED)
-//    Serial.println("  ODRIVE_ERROR_THERMISTOR_DISCONNECTED");
-//  if (errors & ODRIVE_ERROR_CALIBRATION_ERROR)
-//    Serial.println("  ODRIVE_ERROR_CALIBRATION_ERROR");
-//}
+// Function that prints active errors to the Serial monitor
+void OdriveMotor::printOdriveErrors()  
+{
+  uint32_t errors = atol(odrive_->getParameterAsString("axis0.active_errors").c_str());
+  Serial.print("Odrive Error Code: "); 
+  Serial.println( errors, HEX ); 
+
+}
 
 //void OdriveMotor::printOdriveState()
 //{

@@ -66,6 +66,7 @@ ODriveFeedback ODriveUART::getFeedback() {
             response.substring(spacePos+1).toFloat()
         };
     } else {
+        Serial.println("ODriveUART Failed to read state."); 
         return {0.0f, 0.0f};
     }
 }

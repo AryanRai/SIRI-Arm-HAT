@@ -95,6 +95,7 @@ void SerialHandler::runCommand()
     case INIT_ARM: 
     {
       // initialise the arm 
+      Serial.println("Initialise arm command received"); 
       arm_controller_.initArm( argument_arr_, arg_index_ ); 
       arm_init_ = true; 
       break; 

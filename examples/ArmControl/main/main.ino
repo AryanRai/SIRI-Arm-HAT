@@ -1,4 +1,13 @@
 
+/*
+TO DO:
+- Improve debuggability/ error handling,
+- Tune the motors,
+- Reset all of the motors when the reset command is received. 
+- Add servo and stepper control support. 
+
+*/ 
+
 #include "commands.h"
 #include "ODriveUART.h"
 #include "ArmController.h" 

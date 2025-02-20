@@ -5,7 +5,7 @@
 ArmController::ArmController( const int dofs ) 
   : motor_num_( dofs )
 {
-  memset( motors_, 0, MAX_MOTOR_NUM ); // clear the memory 
+  memset( motors_, 0, MAX_MOTOR_NUM * sizeof(Motor) ); // clear the memory 
 }
 
 ArmController::~ArmController()
@@ -50,7 +50,8 @@ void ArmController::addMotor( const char* type, const long reduction_ratio, cons
   // check the type  
   if ( strcmp( "odrive", type ) == 0 ) 
   {
-    Serial.println("Making new odrive motor"); 
+    Serial.print("Making new odrive motor of size: "); 
+    Serial.println(sizeof(OdriveMotor)); 
     motors_[motor_num_++] = new OdriveMotor( baud, reduction_ratio, pin1, pin2 ); 
   }
   else if ( strcmp( "stepper", type ) == 0 ) 
