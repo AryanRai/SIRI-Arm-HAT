@@ -40,6 +40,7 @@ class OdriveMotor : public Motor
     const float MOVEMENT_SPEED = 2.0; // Rad/s
     const float MOVEMENT_TORQUE = 1.0; // Nm 
     const int ATTEMPT_LIMIT = 100; 
+    const int INVALID_COMMAND = -9999; 
 
     // ----- METHODS ----- // 
     //void printOdriveState();

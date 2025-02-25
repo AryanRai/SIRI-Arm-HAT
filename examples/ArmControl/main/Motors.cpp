@@ -73,39 +73,59 @@ OdriveMotor::OdriveMotor( const long baud_rate, const long reduction_ratio, cons
 
 void OdriveMotor::setVelocity( const double vel ) 
 {
-  odrive_->setVelocity( reduction_ratio_ * vel, MOVEMENT_TORQUE ); 
+  odrive_serial_.listen(); 
+  delay(10); // wait to stabilize 
+  odrive_->setVelocity( reduction_ratio_ * vel, MOVEMENT_TORQUE );
+  odrive_serial_.stopListening(); // Free up the serial 
 }
 
 void OdriveMotor::setPosition( const double pos )
 {
-  odrive_->setPosition( reduction_ratio_ * pos, MOVEMENT_SPEED, MOVEMENT_TORQUE ); 
+  odrive_serial_.listen(); 
+  delay(10); // wait to stabilize 
+
+  if ( abs(pos - INVALID_COMMAND) > 0.001 ) 
+  {
+    odrive_->setPosition( reduction_ratio_ * pos, MOVEMENT_SPEED, MOVEMENT_TORQUE ); 
+  }
+  odrive_serial_.stopListening(); // Free up the serial
 }
 
 double OdriveMotor::getPosition()
 {
   // get feedback from odrive 
+  odrive_serial_.listen(); 
+  delay(10); // wait to stabilize 
   ODriveFeedback feedback = odrive_->getFeedback(); 
-  Serial.print("receieved position from odrive: "); 
-  Serial.println(feedback.pos); 
+  odrive_serial_.stopListening(); // Free up the serial
+
   return feedback.pos / reduction_ratio_; 
 }
 
 double OdriveMotor::getVelocity()
 {
   // get feedback from odrive 
+  odrive_serial_.listen(); 
+  delay(10); // wait to stabilize 
+
   ODriveFeedback feedback = odrive_->getFeedback(); 
-  Serial.print("receieved velocity from odrive: "); 
-  Serial.println(feedback.vel); 
+  odrive_serial_.stopListening(); // Free up the serial 
+
   return feedback.vel / reduction_ratio_; 
 }
 
 // Function that prints active errors to the Serial monitor
 void OdriveMotor::printOdriveErrors()  
 {
+  // get feedback from odrive 
+  odrive_serial_.listen(); 
+  delay(10); // wait to stabilize 
+
   uint32_t errors = atol(odrive_->getParameterAsString("axis0.active_errors").c_str());
   Serial.print("Odrive Error Code: "); 
   Serial.println( errors, HEX ); 
 
+  odrive_serial_.stopListening(); // Free up the serial
 }
 
 //void OdriveMotor::printOdriveState()
