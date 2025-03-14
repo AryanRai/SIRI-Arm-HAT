@@ -16,6 +16,7 @@ class ArmController
     void setMotorPos( const double* cmd_pos ); 
     void getMotorStates( double* pos_arr, double* vel_arr ) const; 
     int getNumMotors() const; 
+    void printMotorErrors() const; 
 
   private:
     // --- STATIC CONSTANTS --- // 

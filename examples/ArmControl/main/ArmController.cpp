@@ -98,3 +98,26 @@ int ArmController::getNumMotors() const
 {
   return motor_num_; 
 } 
+
+
+void ArmController::printMotorErrors() const 
+{
+  for ( uint8_t i = 0; i < motor_num_; ++i ) 
+  { 
+    uint32_t err = motors_[i]->getErrors(); 
+    Serial.print("Error Code for motor "); 
+    Serial.print(i); 
+    Serial.print( "; " );  
+    Serial.println(err, HEX); 
+  } 
+}
+
+
+
+
+
+
+
+
+
+

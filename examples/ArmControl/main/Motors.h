@@ -17,7 +17,8 @@ class Motor
     virtual void setPosition( const double pos ) = 0; 
     virtual double getPosition() = 0;
     virtual double getVelocity() = 0; 
-    
+    virtual uint32_t getErrors() = 0;
+
   protected:
     long reduction_ratio_; // speed reduction of the motor, e.g. a 1:10 reduction would be input at 10
 
@@ -32,19 +33,18 @@ class OdriveMotor : public Motor
     void setPosition( const double pos ); 
     double getPosition(); 
     double getVelocity(); 
+    uint32_t getErrors();
 
   private: 
     // ----- SUBCLASSES/STRUCTS ----- // 
 
     // ----- CONSTANTS ----- // 
-    const float MOVEMENT_SPEED = 2.0; // Rad/s
-    const float MOVEMENT_TORQUE = 1.0; // Nm 
-    const int ATTEMPT_LIMIT = 100; 
+    const float METRIC_TO_RAD = 2*3.14159; // motor measures in "rotations" but ROS expects radians 
+    const int ATTEMPT_LIMIT = 1000; 
     const int INVALID_COMMAND = -9999; 
 
     // ----- METHODS ----- // 
     //void printOdriveState();
-    void printOdriveErrors();
 
     // ----- DATA ----- // 
     // normal odrive handle 

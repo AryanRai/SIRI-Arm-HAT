@@ -32,6 +32,7 @@ class SerialHandler
     void readMotorStates(); 
     void setMotorVels(); 
     void setMotorPos(); 
+    void getMotorErrors(); 
 
     // --- DATA --- // 
     // handy variables to help read from serial 

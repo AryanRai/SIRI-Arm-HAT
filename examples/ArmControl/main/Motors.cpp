@@ -9,9 +9,7 @@ Motor::Motor( long reduction_ratio ) : reduction_ratio_( reduction_ratio ) {}
 OdriveMotor::OdriveMotor( const long baud_rate, const long reduction_ratio, const int rx_pin, const int tx_pin ) 
   : Motor( reduction_ratio ), 
     odrive_serial_( rx_pin, tx_pin ) 
-{
-  bool success = true; 
-  
+{  
   // configure the odrive 
   odrive_ = new ODriveUART( odrive_serial_ ); 
   
@@ -25,18 +23,18 @@ OdriveMotor::OdriveMotor( const long baud_rate, const long reduction_ratio, cons
     if ( attempts > ATTEMPT_LIMIT )
     {
       Serial.println("Error: Failed to connect to ODrive");
-      success = false;  
-      break;
+      Serial.print("Odrive Error Code: ");
+      Serial.println( getErrors(), HEX ); 
+
+      abort(); 
+      return; 
     }
     else
     {
       attempts++;
     }
-    
-    delay(100);
+    delay(10);
   }
-  printOdriveErrors(); 
-
 
   // Enable closed loop control 
   Serial.println("Enabling closed loop control"); 
@@ -44,13 +42,19 @@ OdriveMotor::OdriveMotor( const long baud_rate, const long reduction_ratio, cons
   while ( odrive_->getState() != AXIS_STATE_CLOSED_LOOP_CONTROL ) 
   {
     odrive_->clearErrors();
-    odrive_->setState(AXIS_STATE_CLOSED_LOOP_CONTROL);
+    odrive_->setState(AXIS_STATE_CLOSED_LOOP_CONTROL); 
+
+    Serial.print("ODrive State: ");
+    Serial.println( odrive_->getState() );  
 
     if ( attempts > ATTEMPT_LIMIT )
     {
-      Serial.println("Error: Failed to connect to ODrive"); 
-      success = false; 
-      break;
+      Serial.println("Error: Failed to enable closed loop control"); 
+      Serial.print("Odrive Error Code: ");
+      Serial.println( getErrors(), HEX ); 
+
+      abort(); 
+      return; 
     }
     else
     {
@@ -58,35 +62,26 @@ OdriveMotor::OdriveMotor( const long baud_rate, const long reduction_ratio, cons
     }    
     delay(10);
   }
-  printOdriveErrors(); 
-
-  if (success)
-  {
-    Serial.println("ODrive Running!");
-  }
-  else
-  {
-    Serial.println("Error: ODrive initialisation failed"); 
-  }
-  
+  Serial.print("Odrive Error Code: ");
+  Serial.println( getErrors(), HEX ); 
 }
 
 void OdriveMotor::setVelocity( const double vel ) 
 {
   odrive_serial_.listen(); 
-  delay(10); // wait to stabilize 
-  odrive_->setVelocity( reduction_ratio_ * vel, MOVEMENT_TORQUE );
+  // delay(0.1); // wait to stabilize 
+  odrive_->setVelocity( reduction_ratio_ * vel / METRIC_TO_RAD ); 
   odrive_serial_.stopListening(); // Free up the serial 
 }
 
 void OdriveMotor::setPosition( const double pos )
 {
   odrive_serial_.listen(); 
-  delay(10); // wait to stabilize 
+  // delay(0.1); // wait to stabilize 
 
   if ( abs(pos - INVALID_COMMAND) > 0.001 ) 
   {
-    odrive_->setPosition( reduction_ratio_ * pos, MOVEMENT_SPEED, MOVEMENT_TORQUE ); 
+    odrive_->setPosition( reduction_ratio_ * pos / METRIC_TO_RAD ); 
   }
   odrive_serial_.stopListening(); // Free up the serial
 }
@@ -95,37 +90,36 @@ double OdriveMotor::getPosition()
 {
   // get feedback from odrive 
   odrive_serial_.listen(); 
-  delay(10); // wait to stabilize 
+  // delay(0.1); // wait to stabilize 
   ODriveFeedback feedback = odrive_->getFeedback(); 
   odrive_serial_.stopListening(); // Free up the serial
 
-  return feedback.pos / reduction_ratio_; 
+  return METRIC_TO_RAD * feedback.pos / reduction_ratio_; 
 }
 
 double OdriveMotor::getVelocity()
 {
   // get feedback from odrive 
   odrive_serial_.listen(); 
-  delay(10); // wait to stabilize 
+  // delay(0.1); // wait to stabilize 
 
   ODriveFeedback feedback = odrive_->getFeedback(); 
   odrive_serial_.stopListening(); // Free up the serial 
 
-  return feedback.vel / reduction_ratio_; 
+  return METRIC_TO_RAD * feedback.vel / reduction_ratio_; 
 }
 
 // Function that prints active errors to the Serial monitor
-void OdriveMotor::printOdriveErrors()  
+uint32_t OdriveMotor::getErrors()  
 {
   // get feedback from odrive 
   odrive_serial_.listen(); 
-  delay(10); // wait to stabilize 
+  // delay(0.1); // wait to stabilize 
 
   uint32_t errors = atol(odrive_->getParameterAsString("axis0.active_errors").c_str());
-  Serial.print("Odrive Error Code: "); 
-  Serial.println( errors, HEX ); 
-
   odrive_serial_.stopListening(); // Free up the serial
+
+  return errors; 
 }
 
 //void OdriveMotor::printOdriveState()

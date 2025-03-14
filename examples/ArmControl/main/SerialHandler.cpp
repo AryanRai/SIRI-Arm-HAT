@@ -124,6 +124,12 @@ void SerialHandler::runCommand()
     case EMPTY_COMMAND:
     {
       Serial.println("Empty command received"); 
+      break; 
+    }
+    case PRINT_ERRORS:
+    {
+      arm_controller_.printMotorErrors(); 
+      break; 
     }
     default:
     {
@@ -172,9 +178,15 @@ void SerialHandler::readMotorStates()
     if (!first) { Serial.print(" "); }
     else { first = false; } 
     
-    Serial.print(pos_arr[i]); 
+    char pos_str[12];
+    char vel_str[12];
+    
+    dtostrf(pos_arr[i], 1, 8, pos_str);
+    dtostrf(vel_arr[i], 1, 8, vel_str);
+
+    Serial.print(pos_str); 
     Serial.print(" "); 
-    Serial.print(vel_arr[i]); 
+    Serial.print(vel_str); 
   }
   Serial.println(); 
 }
@@ -218,3 +230,4 @@ void SerialHandler::setMotorPos()
   }
   Serial.println(); 
 }
+
