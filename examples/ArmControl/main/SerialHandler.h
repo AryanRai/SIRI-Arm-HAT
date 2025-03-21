@@ -4,6 +4,7 @@
 
 #include "commands.h"
 #include "ArmController.h"
+#include <HardwareSerial.h>
 #include <avr/wdt.h> // Include for watchdog control
 
 

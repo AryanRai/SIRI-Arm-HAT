@@ -14,13 +14,15 @@ TO DO:
 #include "Motors.h" 
 #include "SerialHandler.h" 
 #include <SoftwareSerial.h> 
+#include <HardwareSerial.h>
 
 // start the serial handler 
 SerialHandler mySerialHandler; 
 
 void setup() 
 {
-  Serial.begin(115200);  
+  Serial.begin(115200); 
+
 }
 
 void loop()

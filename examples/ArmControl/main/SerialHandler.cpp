@@ -183,7 +183,7 @@ void SerialHandler::setMotorVels()
 {
   // make an array of doubles 
   uint8_t num_motors = arm_controller_.getNumMotors(); 
-  double cmd_vels[num_motors]; 
+  double cmd_vels[num_motors];  // cmd_vels 
   argsToDoubles( cmd_vels ); 
 
   // send to the arm controller 
@@ -195,8 +195,9 @@ void SerialHandler::setMotorVels()
   {
     Serial.print(cmd_vels[i]); 
     Serial.print(" "); 
+    Serial.println(cmd_vels[i]); 
   }
-  Serial.println(); 
+  // Serial.println(cmd_vels[i]); 
 }
 
 void SerialHandler::setMotorPos()
