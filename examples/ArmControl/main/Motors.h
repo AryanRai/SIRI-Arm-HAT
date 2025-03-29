@@ -18,6 +18,7 @@ class Motor
     virtual double getPosition() = 0;
     virtual double getVelocity() = 0; 
     virtual uint32_t getErrors() = 0;
+    virtual void reset() = 0;
 
   protected:
     long reduction_ratio_;
@@ -35,10 +36,11 @@ class OdriveMotor : public Motor
     double getPosition(); 
     double getVelocity();   // Get motor velocity
     uint32_t getErrors();   // Get error code from ODrive
+    void reset();           // Reset the odrive
 
   private: 
     const float METRIC_TO_RAD = 2*3.14159; 
-    const int ATTEMPT_LIMIT = 1000; 
+    const int ATTEMPT_LIMIT = 100; 
     const int INVALID_COMMAND = -9999; 
 
     HardwareSerial& odrive_serial_;

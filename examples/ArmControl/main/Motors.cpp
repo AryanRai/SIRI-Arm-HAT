@@ -6,13 +6,14 @@ Motor::Motor( long reduction_ratio ) : reduction_ratio_( reduction_ratio ) {}
 OdriveMotor::OdriveMotor( const long baud_rate, const long reduction_ratio, HardwareSerial& serial_port ) 
   : Motor( reduction_ratio ), odrive_serial_( serial_port ) 
 {  
+  // configure the odrive
   odrive_ = new ODriveUART( odrive_serial_ ); 
   
+  // start the serial communication
   odrive_serial_.begin( baud_rate ); 
 
   Serial.println("Waiting for ODrive...");
   int attempts = 0; 
-  
   while ( odrive_->getState() == AXIS_STATE_UNDEFINED ) 
   {
     if ( attempts > ATTEMPT_LIMIT )
@@ -20,8 +21,10 @@ OdriveMotor::OdriveMotor( const long baud_rate, const long reduction_ratio, Hard
       Serial.println("Error: Failed to connect to ODrive");
       Serial.print("Odrive Error Code: ");
       Serial.println( getErrors(), HEX ); 
-      abort(); 
-      return; 
+
+      // abort(); 
+      // return; 
+      break; 
     }
     attempts++;
     delay(10);
@@ -43,8 +46,9 @@ OdriveMotor::OdriveMotor( const long baud_rate, const long reduction_ratio, Hard
       Serial.println("Error: Failed to enable closed loop control"); 
       Serial.print("Odrive Error Code: ");
       Serial.println( getErrors(), HEX ); 
-      abort(); 
-      return; 
+      // abort(); 
+      // return; 
+      break; 
     }
     
     attempts++;
@@ -86,6 +90,13 @@ uint32_t OdriveMotor::getErrors()
   return errors; 
 }
 
+void OdriveMotor::reset()  
+{
+  while ( odrive_->getState() != AXIS_STATE_IDLE) 
+  {
+    odrive_->setState(AXIS_STATE_IDLE); 
+  }
+} 
 
 
 

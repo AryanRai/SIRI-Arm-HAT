@@ -103,7 +103,8 @@ void SerialHandler::runCommand()
 
     case RESET_ARDUINO: 
     {
-      resetArduino(); 
+      // resetArduino(); 
+      resetTeensy(); 
       break; 
     }
     case READ_MOTOR_STATES:
@@ -153,6 +154,18 @@ void SerialHandler::resetArduino()
    wdt_enable(WDTO_15MS); // Enable the watchdog with a 15ms timeout 
    while (true) { delay(1); } // Wait for the watchdog to trigger a reset
 }
+
+void SerialHandler::resetTeensy()
+{
+    Serial.println("Resetting...");
+    Serial.flush(); 
+    arm_controller_.reset(); 
+
+    Serial.flush(); 
+    SCB_AIRCR = 0x05FA0004;  // Trigger a software reset
+    while (true);  // Wait for reset
+}
+
 
 void SerialHandler::readMotorStates()
 {

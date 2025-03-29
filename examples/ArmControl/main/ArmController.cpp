@@ -21,9 +21,9 @@ void ArmController::initArm( char argument_arr[ARG_ARRAY_BUFFERSIZE][CMD_STRING_
 {
   // iterate over arguments, ignoring the first 
   Serial.println("Initialising arm"); 
-  for ( uint8_t i = 1; i < arg_num; i += 5 ) // 5 arguments per motor
+  for ( uint8_t i = 1; i < arg_num; i += 4 ) // 4 arguments per motor
   { 
-    // chunks of 5 (motor_type, red_ratio, baud, serial_port_name)
+    // chunks of 4 (motor_type, red_ratio, baud, serial_port_name)
     char motor_type[MOTOR_TYPE_BUFFERSIZE]; 
     strcpy( motor_type, argument_arr[i] ); // copy across 
     long red_ratio = atoi(argument_arr[i+1]); 
@@ -61,6 +61,8 @@ HardwareSerial* ArmController::selectSerialPort(const char* port_name)
   }
   // Add more serial ports here as needed (e.g., Serial4, Serial5)
   
+  Serial.print("Don't recognise serial port name: ");
+  Serial.println(port_name); 
   return nullptr; // Return null if invalid serial port name
 }
 
@@ -133,6 +135,13 @@ void ArmController::printMotorErrors() const
   } 
 } 
 
+void ArmController::reset()
+{
+  for ( uint8_t i = 0; i < motor_num_; ++i ) 
+  { 
+    motors_[i]->reset(); 
+  } 
+} 
 
 
 /* Old version for Arduino below */

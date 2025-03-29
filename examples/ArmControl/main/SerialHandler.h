@@ -30,6 +30,7 @@ class SerialHandler
     void runCommand(); 
     void argsToDoubles( double* cmd_vels ) const; 
     void resetArduino(); 
+    void resetTeensy(); 
     void readMotorStates(); 
     void setMotorVels(); 
     void setMotorPos(); 

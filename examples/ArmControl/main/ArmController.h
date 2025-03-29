@@ -39,6 +39,9 @@ public:
     // Method to print motor error codes
     void printMotorErrors() const;
 
+    // Method to reset all motors 
+    void reset();
+
 private:
     int motor_num_;   // Number of motors
     Motor* motors_[MAX_MOTOR_NUM]; // Array of motor pointers
