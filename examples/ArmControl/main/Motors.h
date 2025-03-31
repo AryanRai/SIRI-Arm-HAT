@@ -2,6 +2,8 @@
 #ifndef MOTORS_H
 #define MOTORS_H
 
+#include <Servo.h>
+
 #include "Arduino.h"
 #include "ODriveUART.h" 
 
@@ -45,6 +47,29 @@ class OdriveMotor : public Motor
 
     HardwareSerial& odrive_serial_;
     ODriveUART* odrive_; 
+}; 
+
+//// --------------- Servo MOTOR CLASS --------------- //
+class ServoMotor : public Motor 
+{ 
+  public: 
+    ServoMotor( const long reduction_ratio, int pin );
+
+    void setVelocity( const double vel ); // Set motor velocity
+    void setPosition( const double pos ); 
+    double getPosition(); 
+    double getVelocity();   // Get motor velocity
+    uint32_t getErrors();   // Get error code from ODrive
+    void reset();           // Reset the motor
+
+  // Move variables in motor base class? 
+  private: 
+    const float METRIC_TO_RAD = 2*3.14159; 
+    const int ATTEMPT_LIMIT = 100; 
+    const int INVALID_COMMAND = -9999; 
+
+    Servo servo_;
+    int pin_; // what to use for?
 }; 
 
 #endif 

@@ -22,7 +22,7 @@ public:
     void initArm(char argument_arr[ARG_ARRAY_BUFFERSIZE][CMD_STRING_BUFFERSIZE], const int arg_num);
 
     // Method to add motor (pass serial port dynamically)
-    void addMotor(const char* type, const long reduction_ratio, const long baud, HardwareSerial& serial_port);
+    void addMotor(const char* type, const long reduction_ratio, const long baud, HardwareSerial& serial_port, int pin);
 
     // Method to set motor velocities
     void setMotorVel(const double* cmd_vels);

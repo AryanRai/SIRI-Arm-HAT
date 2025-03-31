@@ -1,8 +1,11 @@
 
 #include "Motors.h"
 
+//// ---------------MOTOR BASE CLASS --------------- //
 Motor::Motor( long reduction_ratio ) : reduction_ratio_( reduction_ratio ) {} 
 
+
+//// --------------- ODrive MOTOR CLASS --------------- //
 OdriveMotor::OdriveMotor( const long baud_rate, const long reduction_ratio, HardwareSerial& serial_port ) 
   : Motor( reduction_ratio ), odrive_serial_( serial_port ) 
 {  
@@ -97,6 +100,59 @@ void OdriveMotor::reset()
     odrive_->setState(AXIS_STATE_IDLE); 
   }
 } 
+
+
+
+
+// --------------- Servo MOTOR CLASS --------------- //
+ServoMotor::ServoMotor(const long reduction_ratio, int pin)
+    : Motor(reduction_ratio), pin_(pin)
+{
+    servo_.attach(pin_);  // Attach servo to the specified pin
+    Serial.print("Servo attached to pin ");
+    Serial.println(pin_);
+}
+
+void ServoMotor::setVelocity(const double vel)
+{
+    // Servo has no direct velocity control
+    Serial.println("Warning: Velocity control not supported for ServoMotor.");
+}
+
+void ServoMotor::setPosition(const double pos)
+{
+    // Convert the input position (angle in degrees) to a valid servo range (0 - 180)
+    int servo_angle = constrain(static_cast<int>(pos), 0, 180);
+    servo_.write(servo_angle);
+    Serial.print("Servo set to position: ");
+    Serial.println(servo_angle);
+}
+
+double ServoMotor::getPosition()
+{
+    // Servos don't provide position fedback
+    Serial.println("Warning: getPosition() is not supported for FS5109M.");
+    return -1;  
+}
+
+double ServoMotor::getVelocity()
+{
+    // Servos don’t provide velocity feedback.
+    Serial.println("Warning: getVelocity() is not supported for ServoMotor.");
+    return 0;  
+}
+
+uint32_t ServoMotor::getErrors()
+{
+    // Servos don’t provide error feedback.
+    return 0;
+}
+
+void ServoMotor::reset()
+{
+    setPosition(90);  // Reset the servo to the center position (90 degrees).
+    Serial.println("Servo reset to centre.");
+}
 
 
 

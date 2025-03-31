@@ -17,56 +17,117 @@ ArmController::~ArmController()
   }
 }
 
-void ArmController::initArm( char argument_arr[ARG_ARRAY_BUFFERSIZE][CMD_STRING_BUFFERSIZE], const int arg_num ) 
+// Initialise each motor in arm as inputted 
+void ArmController::initArm(char argument_arr[ARG_ARRAY_BUFFERSIZE][CMD_STRING_BUFFERSIZE], const int arg_num) 
 {
-  // iterate over arguments, ignoring the first 
-  Serial.println("Initialising arm"); 
-  for ( uint8_t i = 1; i < arg_num; i += 4 ) // 4 arguments per motor
-  { 
-    // chunks of 4 (motor_type, red_ratio, baud, serial_port_name)
-    char motor_type[MOTOR_TYPE_BUFFERSIZE]; 
-    strcpy( motor_type, argument_arr[i] ); // copy across 
-    long red_ratio = atoi(argument_arr[i+1]); 
-    long baud = atol(argument_arr[i+2]); 
-    char serial_port_name[CMD_STRING_BUFFERSIZE];
-    strcpy(serial_port_name, argument_arr[i+3]); // get serial port name as string; e.g., Serial1. One ODrive per serial port. 
+  Serial.println("Initializing arm...");
+  
+  uint8_t i = 1; // Start from the first argument (ignore "i")
+  while (i < arg_num) {
+    char motor_type[MOTOR_TYPE_BUFFERSIZE];
+    strcpy(motor_type, argument_arr[i]); // Copy motor type
+    long red_ratio = atol(argument_arr[i+1]); 
 
-    Serial.print("initialising motor with type: "); 
-    Serial.print(motor_type); 
-    Serial.print(", baud: ");
-    Serial.print(baud); 
-    Serial.print(", red_ratio: "); 
-    Serial.print(red_ratio); 
-    Serial.print(", serial_port: "); 
-    Serial.println(serial_port_name);
-    
-    HardwareSerial* serial_port = selectSerialPort(serial_port_name); // Select serial port based on input
+    if (strcmp(motor_type, "servo") == 0) {
+      // Servo: (motor_type, red_ratio, pin)
+      int pin = atoi(argument_arr[i+2]);
+      
+      Serial.print("Initializing servo with pin: ");
+      Serial.println(pin);
+      Serial.print(", red_ratio: ");
+      Serial.println(red_ratio);
+      
+      addMotor(motor_type, red_ratio, 0, Serial, pin); // Use pin, ignore serial (baud = 0) CHECK SERIAL INPUT??
+      i += 3; // Move to the next motor (3 args per servo)
+    } 
 
-    if (serial_port != nullptr) {
-      addMotor(motor_type, red_ratio, baud, *serial_port); 
-    } else {
-      Serial.println("Error: Invalid serial port name");
+    else if (strcmp(motor_type, "odrive") == 0) {
+      // ODrive: (motor_type, red_ratio, baud, serial_port_name)
+      long baud = atol(argument_arr[i+2]);
+      char serial_port_name[CMD_STRING_BUFFERSIZE];
+      strcpy(serial_port_name, argument_arr[i+3]);
+
+      Serial.print("Initializing ODrive with serial port: ");
+      Serial.println(serial_port_name);
+      Serial.print(", baud: ");
+      Serial.println(baud);
+      Serial.print(", red_ratio: ");
+      Serial.println(red_ratio);
+
+      HardwareSerial* serial_port = selectSerialPort(serial_port_name);
+      if (serial_port != nullptr) {
+        addMotor(motor_type, red_ratio, baud, *serial_port, -1); // Use serial, ignore pin
+      } 
+      else {
+        Serial.println("Error: Invalid serial port name");
+      }
+      i += 4; // Move to the next motor (4 args per ODrive)
+    }
+
+    else {
+      Serial.print("Error: Motor type '");
+      Serial.print(motor_type);
+      Serial.println("' not recognized");
+      i += 1; // Move to the next argument
     }
   }
-} 
-
-HardwareSerial* ArmController::selectSerialPort(const char* port_name)
-{
-  if (strcmp(port_name, "Serial1") == 0) {
-    return &Serial1;  // Return reference to Serial1
-  } else if (strcmp(port_name, "Serial2") == 0) {
-    return &Serial2;  // Return reference to Serial2
-  } else if (strcmp(port_name, "Serial3") == 0) {
-    return &Serial3;  // Return reference to Serial3
-  }
-  // Add more serial ports here as needed (e.g., Serial4, Serial5)
-  
-  Serial.print("Don't recognise serial port name: ");
-  Serial.println(port_name); 
-  return nullptr; // Return null if invalid serial port name
 }
 
-void ArmController::addMotor( const char* type, const long reduction_ratio, const long baud, HardwareSerial& serial_port ) 
+
+
+// void ArmController::initArm( char argument_arr[ARG_ARRAY_BUFFERSIZE][CMD_STRING_BUFFERSIZE], const int arg_num ) 
+// {
+//   // iterate over arguments, ignoring the first 
+//   Serial.println("Initialising arm"); 
+//   for ( uint8_t i = 1; i < arg_num; i += 4 ) // 4 arguments per motor
+//   { 
+//     // chunks of 4 (motor_type, red_ratio, baud, serial_port_name)
+//     char motor_type[MOTOR_TYPE_BUFFERSIZE]; 
+//     strcpy( motor_type, argument_arr[i] ); // copy across 
+//     long red_ratio = atoi(argument_arr[i+1]); 
+//     long baud = atol(argument_arr[i+2]); 
+//     char serial_port_name[CMD_STRING_BUFFERSIZE];
+//     strcpy(serial_port_name, argument_arr[i+3]); // get serial port name as string; e.g., Serial1. One ODrive per serial port. 
+
+//     Serial.print("initialising motor with type: "); 
+//     Serial.print(motor_type); 
+//     Serial.print(", baud: ");
+//     Serial.print(baud); 
+//     Serial.print(", red_ratio: "); 
+//     Serial.print(red_ratio); 
+//     Serial.print(", serial_port: "); 
+//     Serial.println(serial_port_name);
+    
+//     HardwareSerial* serial_port = selectSerialPort(serial_port_name); // Select serial port based on input
+
+//     if (serial_port != nullptr) {
+//       addMotor(motor_type, red_ratio, baud, *serial_port); 
+//     } else {
+//       Serial.println("Error: Invalid serial port name");
+//     }
+//   }
+// } 
+
+// For teensy
+HardwareSerial* ArmController::selectSerialPort(const char* port_name)
+{
+  Serial.println("Not working, using Arduino code not Teensy");
+
+  // if (strcmp(port_name, "Serial1") == 0) {
+  //   return &Serial1;  // Return reference to Serial1
+  // } else if (strcmp(port_name, "Serial2") == 0) {
+  //   return &Serial2;  // Return reference to Serial2
+  // } else if (strcmp(port_name, "Serial3") == 0) {
+  //   return &Serial3;  // Return reference to Serial3
+  // }
+  // // Add more serial ports here as needed (e.g., Serial4, Serial5)
+  
+  // Serial.print("Don't recognise serial port name: ");
+  // Serial.println(port_name); 
+  // return nullptr; // Return null if invalid serial port name
+}
+
+void ArmController::addMotor( const char* type, const long reduction_ratio, const long baud, HardwareSerial& serial_port, int pin ) 
 {
   // check the type  
   if ( strcmp( "odrive", type ) == 0 ) 
@@ -81,7 +142,9 @@ void ArmController::addMotor( const char* type, const long reduction_ratio, cons
   }
   else if ( strcmp( "servo", type ) == 0 )
   {
-    // TODO 
+    Serial.print("Making new servo motor of size: "); 
+    Serial.println(sizeof(ServoMotor)); 
+    motors_[motor_num_++] = new ServoMotor( reduction_ratio, pin ); // Use the selected pin
   }
   else
   {
@@ -92,6 +155,7 @@ void ArmController::addMotor( const char* type, const long reduction_ratio, cons
   }
 } 
 
+
 void ArmController::setMotorVel( const double* cmd_vels ) 
 {
   for ( uint8_t i = 0; i < motor_num_; ++i )
@@ -100,6 +164,7 @@ void ArmController::setMotorVel( const double* cmd_vels )
   } 
 }
 
+// input position is deg for servos
 void ArmController::setMotorPos( const double* cmd_pos ) 
 {
   for ( uint8_t i = 0; i < motor_num_; ++i )

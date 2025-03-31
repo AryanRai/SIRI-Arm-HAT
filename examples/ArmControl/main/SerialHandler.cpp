@@ -20,6 +20,7 @@ void SerialHandler::readCommand()
   {
     if ( new_word_ ) 
     {
+      // Serial.println("Input received");
       cmd_index_ = 0; 
       memset(cmd_buffer_, 0, CMD_STRING_BUFFERSIZE); // Clear buffer 
       new_word_ = false;  
@@ -53,10 +54,12 @@ void SerialHandler::processCharacter()
 {
   if (chr_ == '\r') // End of command
   {
+    Serial.println("End of command");
     handleCommandEnd(); 
   }
   else if (chr_ == ' ') // Argument end 
   {
+    Serial.println("End of argument");
     storeArgument(); 
   }
   else // Regular character
@@ -103,22 +106,26 @@ void SerialHandler::runCommand()
 
     case RESET_ARDUINO: 
     {
-      // resetArduino(); 
-      resetTeensy(); 
+      Serial.println("Reset command received");
+      resetArduino(); 
+      // resetTeensy(); 
       break; 
     }
     case READ_MOTOR_STATES:
     {
+      Serial.println("Read motors command received");
       readMotorStates(); 
       break;
     }
     case MOTOR_SPEEDS: 
     {
+      Serial.println("Set velocity command received");
       setMotorVels(); 
       break; 
     }
     case MOTOR_POSITIONS:
     {
+      Serial.println("Set position command received");
       setMotorPos(); 
       break; 
     }
@@ -155,15 +162,18 @@ void SerialHandler::resetArduino()
    while (true) { delay(1); } // Wait for the watchdog to trigger a reset
 }
 
+// For teensy
 void SerialHandler::resetTeensy()
 {
-    Serial.println("Resetting...");
-    Serial.flush(); 
-    arm_controller_.reset(); 
+    
+    Serial.println("Not working, using Arduino code not Teensy");
+    // Serial.println("Resetting...");
+    // Serial.flush(); 
+    // arm_controller_.reset(); 
 
-    Serial.flush(); 
-    SCB_AIRCR = 0x05FA0004;  // Trigger a software reset
-    while (true);  // Wait for reset
+    // Serial.flush(); 
+    // SCB_AIRCR = 0x05FA0004;  // Trigger a software reset
+    // while (true);  // Wait for reset
 }
 
 

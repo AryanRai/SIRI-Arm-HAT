@@ -8,6 +8,9 @@ TO DO:
 
 */ 
 
+// i odrive reduction_ratio tx1 rx1 baud1 \r\n (ratio = 1 whilst developing, another might have 16)
+// i servo reduction_ratio pin \r\n (ratio = 1)
+
 #include "commands.h"
 #include "ODriveUART.h"
 #include "ArmController.h" 
@@ -22,8 +25,8 @@ SerialHandler mySerialHandler;
 void setup() 
 {
   Serial.begin(115200); 
-
 }
+
 
 void loop()
 {
