@@ -66,7 +66,7 @@ void OdriveMotor::setVelocity( const double vel )
 
 void OdriveMotor::setPosition( const double pos )
 {
-  if ( abs(pos - INVALID_COMMAND) > 0.001 ) 
+  if ( abs(pos - INVALID_COMMAND) > 0.001 ) // check it isnt the invalid cmd flag
   {
     odrive_->setPosition( reduction_ratio_ * pos / METRIC_TO_RAD ); 
   }
@@ -82,6 +82,13 @@ double OdriveMotor::getVelocity()
 {
   ODriveFeedback feedback = odrive_->getFeedback(); 
   return METRIC_TO_RAD * feedback.vel / reduction_ratio_; 
+}
+
+void OdriveMotor::getPosVel( double& pos, double& vel )
+{
+  ODriveFeedback feedback = odrive_->getFeedback(); 
+  pos = METRIC_TO_RAD * feedback.pos / reduction_ratio_; 
+  vel = METRIC_TO_RAD * feedback.vel / reduction_ratio_; 
 }
 
 uint32_t OdriveMotor::getErrors()  

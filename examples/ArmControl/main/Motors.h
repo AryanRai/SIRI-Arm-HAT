@@ -17,6 +17,7 @@ class Motor
     virtual void setPosition( const double pos ) = 0; 
     virtual double getPosition() = 0;
     virtual double getVelocity() = 0; 
+    virtual void getPosVel( double& pos, double& vel ) = 0; 
     virtual uint32_t getErrors() = 0;
     virtual void reset() = 0;
 
@@ -34,7 +35,9 @@ class OdriveMotor : public Motor
     void setVelocity( const double vel ); // Set motor velocity
     void setPosition( const double pos ); 
     double getPosition(); 
-    double getVelocity();   // Get motor velocity
+    double getVelocity();
+    void getPosVel( double& pos, double& vel ); 
+
     uint32_t getErrors();   // Get error code from ODrive
     void reset();           // Reset the odrive
 

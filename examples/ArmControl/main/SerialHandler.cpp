@@ -208,9 +208,8 @@ void SerialHandler::setMotorVels()
   {
     Serial.print(cmd_vels[i]); 
     Serial.print(" "); 
-    Serial.println(cmd_vels[i]); 
   }
-  // Serial.println(cmd_vels[i]); 
+  Serial.println(); 
 }
 
 void SerialHandler::setMotorPos()

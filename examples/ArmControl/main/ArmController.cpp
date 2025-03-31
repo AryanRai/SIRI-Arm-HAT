@@ -111,10 +111,13 @@ void ArmController::setMotorPos( const double* cmd_pos )
 void ArmController::getMotorStates( double* pos_arr, double* vel_arr ) const 
 {
   // populate the provided array 
+  double pos; 
+  double vel; 
   for ( uint8_t i = 0; i < motor_num_; ++i ) 
   { 
-    pos_arr[i] = motors_[i]->getPosition(); 
-    vel_arr[i] = motors_[i]->getVelocity(); 
+    motors_[i]->getPosVel( pos, vel ); 
+    pos_arr[i] = pos; 
+    vel_arr[i] = vel; 
   } 
 }  
 
