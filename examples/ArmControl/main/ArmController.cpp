@@ -143,7 +143,9 @@ void ArmController::reset()
   for ( uint8_t i = 0; i < motor_num_; ++i ) 
   { 
     motors_[i]->reset(); 
+    delete motors_[i]; 
   } 
+  motor_num_ = 0; 
 } 
 
 

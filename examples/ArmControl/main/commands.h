@@ -14,21 +14,7 @@
 #define RESET_ARDUINO      'r' // command: "r\r\n"
 #define EMPTY_COMMAND      '\r'
 
-//#define LEFT               0
-//#define RIGHT              1
-
 const int CMD_STRING_BUFFERSIZE = 15; // longest command word will be positions sent by ROS, usually max 11 chars long
 const int ARG_ARRAY_BUFFERSIZE = 36; // longest command string is the arm init, would be 7 motors * 5 arguments + 1 command = 36
-
-//#define ANALOG_READ        'a'
-//#define GET_BAUDRATE       'b'
-//#define PIN_MODE           'c'
-//#define DIGITAL_READ       'd'
-//#define MOTOR_RAW_PWM      'o'
-//#define PING               'p'
-//#define RESET_ENCODERS     'r'
-//#define UPDATE_PID         'u'
-//#define DIGITAL_WRITE      'w'
-//#define ANALOG_WRITE       'x'
 
 #endif

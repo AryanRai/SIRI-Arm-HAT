@@ -160,10 +160,6 @@ void SerialHandler::resetTeensy()
     Serial.println("Resetting...");
     Serial.flush(); 
     arm_controller_.reset(); 
-
-    Serial.flush(); 
-    SCB_AIRCR = 0x05FA0004;  // Trigger a software reset
-    while (true);  // Wait for reset
 }
 
 
