@@ -1,5 +1,5 @@
  
-#include <ODriveUART.h>
+#include "ODriveUART.h"
 #include <SoftwareSerial.h>
 
 // Documentation for this example can be found here:
@@ -19,7 +19,7 @@
 // Note that this is implemented poorly and can lead to wrong data sent or read.
 // pin 8: RX - connect to ODrive TX
 // pin 9: TX - connect to ODrive RX
-SoftwareSerial odrive_serial(8, 9);
+SoftwareSerial odrive_serial(24, 25);
 unsigned long baudrate = 19200; // Must match what you configure on the ODrive (see docs for details)
 
 // Teensy 3 and 4 (all versions) - Serial1
@@ -36,14 +36,13 @@ unsigned long baudrate = 19200; // Must match what you configure on the ODrive (
 // HardwareSerial& odrive_serial = Serial1;
 // unsigned long baudrate = 115200; // Must match what you configure on the ODrive (see docs for details)
 
-
 ODriveUART odrive(odrive_serial);
 
 void setup() {
-  odrive_serial.begin(baudrate);
-
   Serial.begin(115200); // Serial to PC
+  Serial.println("Serial initialised"); 
   
+  odrive_serial.begin(baudrate);
   delay(10);
 
   Serial.println("Waiting for ODrive...");
