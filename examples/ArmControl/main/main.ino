@@ -5,7 +5,6 @@ TO DO:
 - Tune the motors,
 - Reset all of the motors when the reset command is received. 
 - Add servo and stepper control support. 
-
 */ 
 
 #include "commands.h"
@@ -22,7 +21,6 @@ SerialHandler mySerialHandler;
 void setup() 
 {
   Serial.begin(115200); 
-
 }
 
 void loop()
